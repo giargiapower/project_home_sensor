@@ -1,3 +1,11 @@
 # project_home_sensor
 
-creating a net of sensors, distributed all over my home, connected to a server that store all data 
+the project consists in creating a network of home sensors all connected to a server that use all data to ml predictions.
+
+for the moment the only program available is server.erl. 
+
+command :
+server:start() #to start the server 
+server:store("sensore gas", 10). #to store data sensor to the server 
+server:lookup("sensore gas"). #to see if the data is correctly installed 
+
