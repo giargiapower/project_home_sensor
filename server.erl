@@ -1,9 +1,21 @@
 -module(server).
--export([start/2 , loop/2]).
-%quicksort(_ , []) -> []; quicksort/2 
-%quicksort(P, [Pivot | T]) -> quicksort(P , [X || X <- T , P(X, Pivot)]) ++ [Pivot] ++  quicksort(P , [X || X <- T , not P(X, Pivot)]).
+-export([start/0, store/2, lookup/1]).
 
+start() -> register(server, spawn(fun() -> loop() end)).
 
-start(N,A) -> spawn (server, loop, [N,A]).
-loop(0,A) -> io:format("~p(~p) ~p~n", [A, self(), stops]);
-loop(N,A) -> io:format("~p(~p) ~p~n", [A, self(), N]), loop(N-1,A).
+store(Key, Value) -> send({store, Key, Value}).
+
+lookup(Key) -> send({lookup, Key}).
+
+send(Q) ->
+server ! {self(), Q},
+receive
+{ok, Reply} -> Reply
+end.
+
+loop() ->
+receive
+{From, {store, Key, Value}} -> put(Key, {erlang:localtime(), Value}), From ! {ok, true}, loop();
+{From, {lookup, Key}} -> From ! {ok, get(Key)}, loop()
+end.
+
